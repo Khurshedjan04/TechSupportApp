@@ -2,33 +2,28 @@
 import { useEffect, useState } from "react";
 import {
   ComputerDesktopIcon,
-  WrenchScrewdriverIcon,
-  ClockIcon,
   MapPinIcon,
   TruckIcon,
-  QuestionMarkCircleIcon,
-  DocumentTextIcon,
   ChatBubbleLeftRightIcon,
-  CalendarDaysIcon,
   CurrencyDollarIcon,
-  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
-import { usePathname, useSearchParams } from "next/navigation";
 
 export default function TechnicalSupport() {
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
+
   const [activeTab, setActiveTab] = useState("submit-request");
-  const [customerType, setCustomerType] = useState("individual");
-  const router = useSearchParams();
+  const [customerType, setCustomerType] = useState("Individual");
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    userType: customerType,
     company: "",
-    deviceType: "",
-    issueDescription: "",
+    device: "",
+    issue: "",
     urgency: "medium",
-    preferredDate: "",
-    preferredTime: "",
     serviceLocation: "drop-off",
   });
 
@@ -37,15 +32,43 @@ export default function TechnicalSupport() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    console.log(formData);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Support request submitted:", formData);
-    alert(
-      "Support request submitted successfully! We will contact you within 2 hours."
-    );
+
+    try {
+      const res = await fetch("http://localhost:5000/api/supportRequests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data || "Failed to submit support request.");
+        console.log(data);
+        return;
+      }
+
+      alert(
+        "Support request submitted successfully! We will contact you within 2 hours."
+      );
+      setFormData({
+        userType: "",
+        issue: "",
+        device: "",
+        urgency: "medium",
+      });
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("An error occurred. Please try again later.");
+    }
   };
 
   useEffect(() => {
@@ -56,18 +79,14 @@ export default function TechnicalSupport() {
           .getElementById("quote-request")
           .scrollIntoView({ behavior: "smooth" });
       }, 500);
-    } else if (window.location.hash === "#support-request") {
+    } else if (
+      window.location.hash === "#support-request" ||
+      window.location.hash === "#booking-request"
+    ) {
       setActiveTab("submit-request");
       setTimeout(() => {
         document
           .getElementById("support-request")
-          .scrollIntoView({ behavior: "smooth" });
-      }, 500);
-    } else if (window.location.hash === "#booking-request") {
-      setActiveTab("schedule-appointment");
-      setTimeout(() => {
-        document
-          .getElementById("booking-request")
           .scrollIntoView({ behavior: "smooth" });
       }, 500);
     }
@@ -151,16 +170,6 @@ export default function TechnicalSupport() {
                   Submit Request
                 </button>
                 <button
-                  onClick={() => setActiveTab("schedule-appointment")}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === "schedule-appointment"
-                      ? "border-blue-500 text-blue-400"
-                      : "border-transparent text-gray-400 hover:text-white"
-                  }`}
-                >
-                  Schedule Appointment
-                </button>
-                <button
                   onClick={() => setActiveTab("get-quote")}
                   className={`py-4 px-1 border-b-2 font-medium text-sm ${
                     activeTab === "get-quote"
@@ -188,7 +197,7 @@ export default function TechnicalSupport() {
                     </label>
                     <div className="flex space-x-4">
                       <button
-                        onClick={() => setCustomerType("individual")}
+                        onClick={() => setCustomerType("Individual")}
                         className={`px-4 py-2 rounded-md ${
                           customerType === "individual"
                             ? "bg-blue-600 text-white"
@@ -198,7 +207,7 @@ export default function TechnicalSupport() {
                         Individual
                       </button>
                       <button
-                        onClick={() => setCustomerType("business")}
+                        onClick={() => setCustomerType("Business")}
                         className={`px-4 py-2 rounded-md ${
                           customerType === "business"
                             ? "bg-blue-600 text-white"
@@ -212,51 +221,7 @@ export default function TechnicalSupport() {
 
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          required
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          required
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Phone Number *
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          required
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-
-                      {customerType === "business" && (
+                      {customerType === "Business" && (
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
                             Company Name
@@ -277,9 +242,9 @@ export default function TechnicalSupport() {
                         Device Type *
                       </label>
                       <select
-                        name="deviceType"
+                        name="device"
                         required
-                        value={formData.deviceType}
+                        value={formData.device}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
@@ -299,10 +264,10 @@ export default function TechnicalSupport() {
                         Issue Description *
                       </label>
                       <textarea
-                        name="issueDescription"
+                        name="issue"
                         required
                         rows={4}
-                        value={formData.issueDescription}
+                        value={formData.issue}
                         onChange={handleInputChange}
                         placeholder="Please describe the issue in detail..."
                         className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -361,58 +326,6 @@ export default function TechnicalSupport() {
                   </form>
                 </div>
               )}
-
-              {activeTab === "schedule-appointment" && (
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-6">
-                    Schedule Appointment
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-gray-700 rounded-lg p-4">
-                      <CalendarDaysIcon className="h-8 w-8 text-blue-500 mb-3" />
-                      <h3 className="text-lg font-medium text-white mb-2">
-                        Choose Date
-                      </h3>
-                      <input
-                        type="date"
-                        className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white"
-                      />
-                    </div>
-
-                    <div className="bg-gray-700 rounded-lg p-4">
-                      <ClockIcon className="h-8 w-8 text-blue-500 mb-3" />
-                      <h3 className="text-lg font-medium text-white mb-2">
-                        Available Times
-                      </h3>
-                      <div className="space-y-2">
-                        <button className="w-full text-left px-3 py-2 bg-gray-600 hover:bg-gray-500 rounded text-white">
-                          9:00 AM - 10:00 AM
-                        </button>
-                        <button className="w-full text-left px-3 py-2 bg-gray-600 hover:bg-gray-500 rounded text-white">
-                          2:00 PM - 3:00 PM
-                        </button>
-                        <button className="w-full text-left px-3 py-2 bg-gray-600 hover:bg-gray-500 rounded text-white">
-                          4:00 PM - 5:00 PM
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-700 rounded-lg p-4">
-                      <WrenchScrewdriverIcon className="h-8 w-8 text-blue-500 mb-3" />
-                      <h3 className="text-lg font-medium text-white mb-2">
-                        Service Type
-                      </h3>
-                      <select className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white">
-                        <option>Computer Repair</option>
-                        <option>Network Setup</option>
-                        <option>Data Recovery</option>
-                        <option>Consultation</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {activeTab === "get-quote" && (
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-6">
