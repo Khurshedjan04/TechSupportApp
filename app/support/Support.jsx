@@ -63,14 +63,13 @@ export default function TechnicalSupport() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/api/supportRequests", {
+      const res = await fetch("https://techsupport-backend.onrender.com/api/supportRequests", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +82,6 @@ export default function TechnicalSupport() {
 
       if (!res.ok) {
         alert(data || "Failed to submit support request.");
-        console.log(data);
         return;
       }
 
@@ -105,7 +103,7 @@ export default function TechnicalSupport() {
   const handleClick = async () => {
     setQuoteData({ ...quoteData, budget: quoteBudget.total });
     try {
-      const res = await fetch("http://localhost:5000/api/quoteRequests", {
+      const res = await fetch("https://techsupport-backend.onrender.com/api/quoteRequests", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
