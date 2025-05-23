@@ -28,12 +28,11 @@ export default function LoginPage() {
 
       localStorage.setItem("token", data.token);
 
-      // Decode token to check role (optional — or do it in middleware)
       const decoded = JSON.parse(atob(data.token.split(".")[1]));
       if (decoded.role === "admin") {
         alert("You're Admin, consider going to the admin page");
       } else {
-        router.replace("/");
+        window.location.href = "/";
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");

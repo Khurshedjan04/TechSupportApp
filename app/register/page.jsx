@@ -40,7 +40,7 @@ export default function RegisterPage() {
       localStorage.setItem("token", data.token);
       setSuccess("Registration successful! Redirecting...");
       setTimeout(() => {
-        router.push("/");
+        window.location.href = "/";
       }, 1500);
     } catch (err) {
         console.log(err);

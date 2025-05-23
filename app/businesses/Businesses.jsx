@@ -122,54 +122,6 @@ export default function ForBusinesses() {
                 </Link>
               </div>
             </div>
-            <div className="mt-12 lg:mt-0">
-              <div className="bg-gray-800 rounded-lg p-8 shadow-xl">
-                <h3 className="text-lg font-medium text-white mb-4">
-                  Business Support Request
-                </h3>
-                <form className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300">
-                      Company Name
-                    </label>
-                    <input
-                      type="text"
-                      className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white"
-                      placeholder="Your company name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300">
-                      Number of Employees
-                    </label>
-                    <select className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white">
-                      <option>1-10 employees</option>
-                      <option>11-50 employees</option>
-                      <option>51-200 employees</option>
-                      <option>200+ employees</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300">
-                      Service Needed
-                    </label>
-                    <select className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white">
-                      <option>On-site IT Support</option>
-                      <option>Network Setup/Management</option>
-                      <option>Server Maintenance</option>
-                      <option>Security Solutions</option>
-                      <option>Full Managed Services</option>
-                    </select>
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-500 to-green-600 text-white py-2 px-4 rounded-md hover:opacity-90"
-                  >
-                    Request Quote
-                  </button>
-                </form>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -294,7 +246,7 @@ export default function ForBusinesses() {
               <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
                 <div className="inline-flex rounded-md shadow">
                   <Link
-                  href="/support#support-request"
+                    href="/support#support-request"
                     className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-500 to-green-600 hover:opacity-90"
                   >
                     Free Consultation

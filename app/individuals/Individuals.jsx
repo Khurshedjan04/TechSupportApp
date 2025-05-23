@@ -2,8 +2,6 @@ import Link from "next/link";
 import {
   HomeIcon,
   ClockIcon,
-  CurrencyDollarIcon,
-  BookOpenIcon,
   ShieldCheckIcon,
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
@@ -91,42 +89,6 @@ export default function ForIndividuals() {
                 >
                   Get Free Quote
                 </Link>
-              </div>
-            </div>
-            <div className="mt-12 lg:mt-0">
-              <div className="bg-gray-800 rounded-lg p-8 shadow-xl">
-                <h3 className="text-lg font-medium text-white mb-4">
-                  Quick Service Request
-                </h3>
-                <form className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300">
-                      Device Type
-                    </label>
-                    <select className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white">
-                      <option>Desktop Computer</option>
-                      <option>Laptop</option>
-                      <option>Tablet</option>
-                      <option>Smartphone</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300">
-                      Issue Description
-                    </label>
-                    <textarea
-                      rows={3}
-                      className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white"
-                      placeholder="Describe the problem you're experiencing..."
-                    ></textarea>
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-500 to-green-600 text-white py-2 px-4 rounded-md hover:opacity-90"
-                  >
-                    Submit Request
-                  </button>
-                </form>
               </div>
             </div>
           </div>

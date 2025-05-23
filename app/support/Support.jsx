@@ -26,6 +26,37 @@ export default function TechnicalSupport() {
     urgency: "medium",
     serviceLocation: "drop-off",
   });
+  const [quoteData, setQuoteData] = useState({
+    serviceType: "Computer Diagnostic",
+    budget: "under-500",
+    timeline: "Standard",
+  });
+
+  const [quoteBudget, setQuoteBudget] = useState({
+    serviceFee: 50,
+    urgencyFee: 0,
+    total: 50,
+  });
+
+  const calculateSum = () => {
+    let serviceFee = 50;
+    let urgencyFee = 0;
+
+    if (quoteData.serviceType === "Virus Removal") serviceFee = 80;
+    else if (quoteData.serviceType === "Hardware Repair") serviceFee = 200;
+    else if (quoteData.serviceType === "Data Recovery") serviceFee = 300;
+    else if (quoteData.serviceType === "Network Setup") serviceFee = 120;
+    else if (quoteData.serviceType === "On-site Support") serviceFee = 90;
+
+    if (quoteData.timeline === "Express") urgencyFee = 25;
+    else if (quoteData.timeline === "Urgent") urgencyFee = 50;
+
+    setQuoteBudget({
+      serviceFee,
+      urgencyFee,
+      total: serviceFee + urgencyFee,
+    });
+  };
 
   const handleInputChange = (e) => {
     setFormData({
@@ -60,7 +91,7 @@ export default function TechnicalSupport() {
         "Support request submitted successfully! We will contact you within 2 hours."
       );
       setFormData({
-        userType: "",
+        userType: "Individual",
         issue: "",
         device: "",
         urgency: "medium",
@@ -70,6 +101,44 @@ export default function TechnicalSupport() {
       alert("An error occurred. Please try again later.");
     }
   };
+
+  const handleClick = async () => {
+    setQuoteData({ ...quoteData, budget: quoteBudget.total });
+    try {
+      const res = await fetch("http://localhost:5000/api/quoteRequests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(quoteData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data || "Failed to submit support request.");
+        console.log(data);
+        return;
+      }
+
+      alert(
+        "Quote request submitted successfully! We will contact you within 2 hours."
+      );
+      setQuoteData({
+        serviceType: "",
+        budget: "",
+        timeline: "",
+      });
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("An error occurred. Please try again later.");
+    }
+  };
+
+  useEffect(() => {
+    calculateSum();
+  }, [quoteData]);
 
   useEffect(() => {
     if (window.location.hash === "#quote-request") {
@@ -290,7 +359,7 @@ export default function TechnicalSupport() {
                             Medium - Within 24 hours
                           </option>
                           <option value="high">High - Same day</option>
-                          <option value="critical">
+                          <option value="urgent">
                             Critical - Immediate attention
                           </option>
                         </select>
@@ -341,13 +410,35 @@ export default function TechnicalSupport() {
                           <label className="block text-sm font-medium text-gray-300 mb-2">
                             Service Type
                           </label>
-                          <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
-                            <option>Computer Diagnostic - $50</option>
-                            <option>Virus Removal - $80</option>
-                            <option>Hardware Repair - $100-200</option>
-                            <option>Data Recovery - $150-300</option>
-                            <option>Network Setup - $120</option>
-                            <option>On-site Support - $90/hour</option>
+                          <select
+                            name="serviceType"
+                            value={quoteData.serviceType}
+                            onChange={(e) =>
+                              setQuoteData({
+                                ...quoteData,
+                                [e.target.name]: e.target.value,
+                              })
+                            }
+                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                          >
+                            <option value="Computer Diagnostic">
+                              Computer Diagnostic - $50
+                            </option>
+                            <option value="Virus Removal">
+                              Virus Removal - $80
+                            </option>
+                            <option value="Hardware Repair">
+                              Hardware Repair - $200
+                            </option>
+                            <option value="Data Recovery">
+                              Data Recovery - $300
+                            </option>
+                            <option value="Network Setup">
+                              Network Setup - $120
+                            </option>
+                            <option value="On-site Support">
+                              On-site Support - $90/hour
+                            </option>
                           </select>
                         </div>
 
@@ -355,12 +446,24 @@ export default function TechnicalSupport() {
                           <label className="block text-sm font-medium text-gray-300 mb-2">
                             Urgency Level
                           </label>
-                          <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
-                            <option>
+                          <select
+                            name="timeline"
+                            value={quoteData.timeline}
+                            onChange={(e) =>
+                              setQuoteData({
+                                ...quoteData,
+                                [e.target.name]: e.target.value,
+                              })
+                            }
+                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                          >
+                            <option value="Standard">
                               Standard (3-5 days) - No extra charge
                             </option>
-                            <option>Express (1-2 days) - +$25</option>
-                            <option>Same Day - +$50</option>
+                            <option value="Express">
+                              Express (1-2 days) - +$25
+                            </option>
+                            <option value="Urgent">Same Day - +$50</option>
                           </select>
                         </div>
                       </div>
@@ -374,19 +477,22 @@ export default function TechnicalSupport() {
                       <div className="space-y-2 text-gray-300">
                         <div className="flex justify-between">
                           <span>Service Fee:</span>
-                          <span>$50.00</span>
+                          <span>${quoteBudget.serviceFee}.00</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Urgency Fee:</span>
-                          <span>$0.00</span>
+                          <span>${quoteBudget.urgencyFee}.00</span>
                         </div>
                         <hr className="border-gray-600" />
                         <div className="flex justify-between text-white font-medium text-lg">
                           <span>Total:</span>
-                          <span>$50.00</span>
+                          <span>${quoteBudget.total}</span>
                         </div>
                       </div>
-                      <button className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-600 text-white py-2 px-4 rounded-md font-medium hover:opacity-90 transition">
+                      <button
+                        onClick={handleClick}
+                        className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-600 text-white py-2 px-4 rounded-md font-medium hover:opacity-90 transition"
+                      >
                         Book This Service
                       </button>
                     </div>

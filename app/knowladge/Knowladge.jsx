@@ -11,6 +11,7 @@ import {
   CheckCircleIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 export default function KnowledgeBase() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -284,9 +285,9 @@ export default function KnowledgeBase() {
                       If these steps didn't resolve your issue, our technicians
                       are here to help.
                     </p>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    <Link href="/support#support-request" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
                       Contact Technical Support
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ) : (
