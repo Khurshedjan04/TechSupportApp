@@ -119,7 +119,7 @@ export default function TechnicalSupport() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data || "Failed to submit support request.");
+        alert(data.message || "Failed to submit support request.");
         console.log(data);
         return;
       }
