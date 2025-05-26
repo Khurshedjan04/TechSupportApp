@@ -13,7 +13,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch("https://techsupport-backend.onrender.com/api/users/login", {
+      const res = await fetch(" https://techsupport-backend.onrender.com/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -22,7 +22,8 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Login failed");
+        setError(data.message || "Login failed");
+        console.log(data);
         return;
       }
 

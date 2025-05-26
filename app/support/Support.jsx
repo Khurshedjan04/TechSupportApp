@@ -17,10 +17,9 @@ export default function TechnicalSupport() {
   }, []);
 
   const [activeTab, setActiveTab] = useState("submit-request");
-  const [customerType, setCustomerType] = useState("Individual");
+  const [clientRequests, setClientRequests] = useState([]);
+  const [clientQuotes, setClientQuotes] = useState([]);
   const [formData, setFormData] = useState({
-    userType: customerType,
-    company: "",
     device: "",
     issue: "",
     urgency: "medium",
@@ -67,9 +66,10 @@ export default function TechnicalSupport() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData);
 
     try {
-      const res = await fetch("https://techsupport-backend.onrender.com/api/supportRequests", {
+      const res = await fetch("http://localhost:5000/api/supportRequests", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +81,7 @@ export default function TechnicalSupport() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data || "Failed to submit support request.");
+        alert(data.message || "Failed to submit support request.");
         return;
       }
 
@@ -89,11 +89,12 @@ export default function TechnicalSupport() {
         "Support request submitted successfully! We will contact you within 2 hours."
       );
       setFormData({
-        userType: "Individual",
         issue: "",
         device: "",
         urgency: "medium",
+        serviceLocation: "drop-off",
       });
+      fetchRequests();
     } catch (error) {
       console.error("Submission error:", error);
       alert("An error occurred. Please try again later.");
@@ -103,14 +104,17 @@ export default function TechnicalSupport() {
   const handleClick = async () => {
     setQuoteData({ ...quoteData, budget: quoteBudget.total });
     try {
-      const res = await fetch("https://techsupport-backend.onrender.com/api/quoteRequests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(quoteData),
-      });
+      const res = await fetch(
+        "https://techsupport-backend.onrender.com/api/quoteRequests",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(quoteData),
+        }
+      );
 
       const data = await res.json();
 
@@ -128,11 +132,49 @@ export default function TechnicalSupport() {
         budget: "",
         timeline: "",
       });
+      fetchQuotes();
     } catch (error) {
       console.error("Submission error:", error);
       alert("An error occurred. Please try again later.");
     }
   };
+
+  const fetchRequests = async () => {
+    try {
+      const res = await fetch(" https://techsupport-backend.onrender.com/api/supportRequests", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      setClientRequests(data);
+    } catch (error) {
+      console.error("Error fetching client requests:", error);
+    }
+  };
+
+  const fetchQuotes = async () => {
+    try {
+      const res = await fetch(" https://techsupport-backend.onrender.com/api/quoteRequests", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      setClientQuotes(data);
+      console.log(data);
+      
+    } catch (error) {
+      console.error("Error fetching client requests:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchRequests();
+      fetchQuotes()
+    }
+  }, [token]);
 
   useEffect(() => {
     calculateSum();
@@ -246,6 +288,26 @@ export default function TechnicalSupport() {
                 >
                   Get Quote
                 </button>
+                <button
+                  onClick={() => setActiveTab("client-requests")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === "client-requests"
+                      ? "border-blue-500 text-blue-400"
+                      : "border-transparent text-gray-400 hover:text-white"
+                  }`}
+                >
+                  My Requests
+                </button>
+                <button
+                  onClick={() => setActiveTab("client-quotes")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === "client-requests"
+                      ? "border-blue-500 text-blue-400"
+                      : "border-transparent text-gray-400 hover:text-white"
+                  }`}
+                >
+                 My quotes
+                </button>
               </nav>
             </div>
 
@@ -256,54 +318,7 @@ export default function TechnicalSupport() {
                   <h2 className="text-2xl font-bold text-white mb-6">
                     Submit Request
                   </h2>
-
-                  {/* Customer Type Selection */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                      I am a:
-                    </label>
-                    <div className="flex space-x-4">
-                      <button
-                        onClick={() => setCustomerType("Individual")}
-                        className={`px-4 py-2 rounded-md ${
-                          customerType === "individual"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                        }`}
-                      >
-                        Individual
-                      </button>
-                      <button
-                        onClick={() => setCustomerType("Business")}
-                        className={`px-4 py-2 rounded-md ${
-                          customerType === "business"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                        }`}
-                      >
-                        Business
-                      </button>
-                    </div>
-                  </div>
-
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {customerType === "Business" && (
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Company Name
-                          </label>
-                          <input
-                            type="text"
-                            name="company"
-                            value={formData.company}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                      )}
-                    </div>
-
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
                         Device Type *
@@ -377,9 +392,7 @@ export default function TechnicalSupport() {
                             Drop-off at service center
                           </option>
                           <option value="mail-in">Mail-in service</option>
-                          {customerType === "business" && (
-                            <option value="on-site">On-site service</option>
-                          )}
+                          <option value="on-site">On-site service</option>
                         </select>
                       </div>
                     </div>
@@ -494,6 +507,80 @@ export default function TechnicalSupport() {
                         Book This Service
                       </button>
                     </div>
+                  </div>
+                </div>
+              )}
+              {activeTab === "client-requests" && (
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-6">
+                    Client Requests
+                  </h2>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full bg-gray-900 text-white border border-gray-700 rounded-lg">
+                      <thead className="bg-gray-800 text-gray-300">
+                        <tr>
+                          <th className="px-4 py-2 text-left">Device</th>
+                          <th className="px-4 py-2 text-left">Issue</th>
+                          <th className="px-4 py-2 text-left">Urgency</th>
+                          <th className="px-4 py-2 text-left">Location</th>
+                          <th className="px-4 py-2 text-left">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {clientRequests.map((req, idx) => (
+                          <tr key={idx} className="border-t border-gray-700">
+                            <td className="px-4 py-2">{req.device}</td>
+                            <td className="px-4 py-2 truncate text-white">
+                              {req.issue}
+                            </td>
+                            <td className="px-4 py-2 capitalize">
+                              {req.urgency}
+                            </td>
+                            <td className="px-4 py-2 capitalize">
+                              {req.serviceLocation}
+                            </td>
+                            <td className="px-4 py-2 capitalize">
+                              {req.status}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {activeTab === "client-quotes" && (
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-6">
+                    Client Requests
+                  </h2>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full bg-gray-900 text-white border border-gray-700 rounded-lg">
+                      <thead className="bg-gray-800 text-gray-300">
+                        <tr>
+                          <th className="px-4 py-2 text-left">Service Type</th>
+                          <th className="px-4 py-2 text-left">Urgency</th>
+                          <th className="px-4 py-2 text-left">Cost</th>
+                          <th className="px-4 py-2 text-left">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {clientQuotes.map((req, idx) => (
+                          <tr key={idx} className="border-t border-gray-700">
+                            <td className="px-4 py-2">{req.serviceType}</td>
+                            <td className="px-4 py-2 truncate text-white">
+                              {req.timeline}
+                            </td>
+                            <td className="px-4 py-2 capitalize">
+                              {req.budget}
+                            </td>
+                            <td className="px-4 py-2 capitalize">
+                              {req.status}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}

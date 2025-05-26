@@ -1,13 +1,12 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    accType: "initial",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -23,18 +22,21 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
     setSuccess("");
-
     try {
-      const res = await fetch("https://techsupport-backend.onrender.com/api/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        " https://techsupport-backend.onrender.com/api/users/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Registration failed");
+        setError(data.message || "Registration failed");
+        console.log(data);
         return;
       }
       localStorage.setItem("token", data.token);
@@ -43,8 +45,7 @@ export default function RegisterPage() {
         window.location.href = "/";
       }, 1500);
     } catch (err) {
-        console.log(err);
-      
+      console.log(err);
     }
   };
 
@@ -55,8 +56,12 @@ export default function RegisterPage() {
           Create Your Dern-Support Account
         </h2>
 
-        {error && <p className="mb-4 text-red-400 text-sm text-center">{error}</p>}
-        {success && <p className="mb-4 text-green-400 text-sm text-center">{success}</p>}
+        {error && (
+          <p className="mb-4 text-red-400 text-sm text-center">{error}</p>
+        )}
+        {success && (
+          <p className="mb-4 text-green-400 text-sm text-center">{success}</p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -102,7 +107,24 @@ export default function RegisterPage() {
               className="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
+          <div>
+            <label htmlFor="password" className="block text-sm text-gray-300">
+              Account Type
+            </label>
+            <select
+              id="accType"
+              name="accType"
+              type="accType"
+              className="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              value={formData.accType}
+              onChange={handleChange}
+            >
+              <option value="initial">Select account type</option>
+              <option value="individual">Individual</option>
+              <option value="business">Business</option>
+            </select>
+          </div>
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-blue-500 to-green-600 text-white py-2 rounded-md hover:opacity-90 transition"
