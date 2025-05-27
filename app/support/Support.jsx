@@ -301,7 +301,7 @@ export default function TechnicalSupport() {
                 <button
                   onClick={() => setActiveTab("client-quotes")}
                   className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === "client-requests"
+                    activeTab === "client-quotes"
                       ? "border-blue-500 text-blue-400"
                       : "border-transparent text-gray-400 hover:text-white"
                   }`}
