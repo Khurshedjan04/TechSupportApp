@@ -69,7 +69,7 @@ export default function TechnicalSupport() {
     console.log(formData);
 
     try {
-      const res = await fetch("http://localhost:5000/api/supportRequests", {
+      const res = await fetch("https://techsupport-backend.onrender.com/api/supportRequests", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ export default function TechnicalSupport() {
     setQuoteData({ ...quoteData, budget: quoteBudget.total });
     try {
       const res = await fetch(
-        "http://localhost:5000/api/quoteRequests",
+        "https://techsupport-backend.onrender.com/api/quoteRequests",
         {
           method: "POST",
           headers: {
