@@ -24,7 +24,7 @@ export default function RegisterPage() {
     setSuccess("");
     try {
       const res = await fetch(
-        " https://techsupport-backend.onrender.com/api/users/register",
+        "https://techsupport-backend.onrender.com/api/users/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -93,6 +93,20 @@ export default function RegisterPage() {
             />
           </div>
 
+          <div>
+            <label htmlFor="email" className="block text-sm text-gray-300">
+              Phone Number
+            </label>
+            <input
+              id="number"
+              name="number"
+              type="text"
+              required
+              value={formData.number}
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
           <div>
             <label htmlFor="password" className="block text-sm text-gray-300">
               Password

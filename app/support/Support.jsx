@@ -69,7 +69,7 @@ export default function TechnicalSupport() {
     console.log(formData);
 
     try {
-      const res = await fetch("https://techsupport-backend.onrender.com/api/supportRequests", {
+      const res = await fetch("http://localhost:5000/api/supportRequests", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ export default function TechnicalSupport() {
     setQuoteData({ ...quoteData, budget: quoteBudget.total });
     try {
       const res = await fetch(
-        "https://techsupport-backend.onrender.com/api/quoteRequests",
+        "http://localhost:5000/api/quoteRequests",
         {
           method: "POST",
           headers: {
@@ -141,7 +141,7 @@ export default function TechnicalSupport() {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch(" https://techsupport-backend.onrender.com/api/supportRequests", {
+      const res = await fetch(" http://localhost:5000/api/supportRequests", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -155,14 +155,13 @@ export default function TechnicalSupport() {
 
   const fetchQuotes = async () => {
     try {
-      const res = await fetch(" https://techsupport-backend.onrender.com/api/quoteRequests", {
+      const res = await fetch(" http://localhost:5000/api/quoteRequests", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       const data = await res.json();
       setClientQuotes(data);
-      console.log(data);
       
     } catch (error) {
       console.error("Error fetching client requests:", error);
